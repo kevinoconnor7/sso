@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/buzzfeed/sso/internal/pkg/aead"
+	log "github.com/buzzfeed/sso/internal/pkg/logging"
 )
 
 // ErrInvalidSession is an error for invalid sessions.
@@ -164,6 +165,7 @@ func (s *CookieStore) setSessionCookie(rw http.ResponseWriter, req *http.Request
 
 // LoadSession returns a SessionState from the cookie in the request.
 func (s *CookieStore) LoadSession(req *http.Request) (*SessionState, error) {
+	logger := log.NewLogEntry()
 	c, err := req.Cookie(s.Name)
 	if err != nil {
 		// always http.ErrNoCookie
@@ -171,6 +173,7 @@ func (s *CookieStore) LoadSession(req *http.Request) (*SessionState, error) {
 	}
 	session, err := UnmarshalSession(c.Value, s.CookieCipher)
 	if err != nil {
+		logger.WithRequestHost(req.Host).WithError(err)
 		return nil, ErrInvalidSession
 	}
 	return session, nil

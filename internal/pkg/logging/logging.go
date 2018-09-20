@@ -50,7 +50,7 @@ func (l *LogEntry) Warn(args ...interface{}) {
 
 // Error wraps the logrus Error function
 func (l *LogEntry) Error(err interface{}, args ...interface{}) {
-	l.withField("error", err).logger.Error(args...)
+	l.WithError(err).logger.Error(args...)
 }
 
 // Fatal wraps the logrus Fatal function
@@ -146,7 +146,7 @@ func (l *LogEntry) WithEndpoint(endpoint string) *LogEntry {
 
 // WithError appends an `error` tag to a LogEntry. Useful for annotating non-Error log
 // entries (e.g. Fatal messages) with an `error` object.
-func (l *LogEntry) WithError(err error) *LogEntry {
+func (l *LogEntry) WithError(err interface{}) *LogEntry {
 	return l.withField("error", err)
 }
 
