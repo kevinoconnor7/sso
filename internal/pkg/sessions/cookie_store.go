@@ -2,6 +2,7 @@ package sessions
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -11,6 +12,9 @@ import (
 
 	"github.com/buzzfeed/sso/internal/pkg/aead"
 )
+
+// ErrInvalidSession is an error for invalid sessions.
+var ErrInvalidSession = errors.New("invalid session")
 
 // CSRFStore has the functions for setting, getting, and clearing the CSRF cookie
 type CSRFStore interface {
@@ -167,7 +171,7 @@ func (s *CookieStore) LoadSession(req *http.Request) (*SessionState, error) {
 	}
 	session, err := UnmarshalSession(c.Value, s.CookieCipher)
 	if err != nil {
-		return nil, err
+		return nil, ErrInvalidSession
 	}
 	return session, nil
 }
